@@ -2,7 +2,7 @@
 
 **Project:** Content Engine  
 **Started:** 2026-06-13  
-**Last Updated:** 2026-06-13 (Phase 4 complete)
+**Last Updated:** 2026-06-13 (Phase 5 code complete — deploy pending)
 
 ---
 
@@ -14,7 +14,7 @@
 | 2 — Types + Core Lib | 6–9 | Complete | 2026-06-13 |
 | 3 — Prompts + API Routes | 10–14 | Complete | 2026-06-13 |
 | 4 — UI + Settings | 15–20 | Complete | 2026-06-13 |
-| 5 — History + Dashboard + Deploy | 21–24 | Not Started | — |
+| 5 — History + Dashboard + Deploy | 21–24 | In Progress | Deploy + E2E test pending |
 
 ---
 
@@ -82,10 +82,10 @@
 
 | Step | Description | Status | Notes |
 |---|---|---|---|
-| 21 | History screen | Not Started | |
-| 22 | Dashboard | Not Started | |
-| 23 | End-to-end test with real content | Not Started | |
-| 24 | Production deploy + smoke test | Not Started | |
+| 21 | History screen | Complete | View / Remix / Delete, empty state, loading state |
+| 22 | Dashboard | Complete | Recent 5 generations + how-it-works fallback |
+| 23 | End-to-end test with real content | Pending | Needs Supabase + API key configured |
+| 24 | Production deploy + smoke test | Pending | Vercel deploy + Supabase integration |
 
 **Phase 5 completed:** —  
 **Notes:** —

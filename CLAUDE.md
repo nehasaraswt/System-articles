@@ -17,9 +17,9 @@ Update it after each phase completes so future sessions have full context.
 
 ## Current Status
 
-**Build phase:** Phase 5 starting  
+**Build phase:** Phase 5 — deploy pending  
 **Last phase completed:** Phase 4 — 2026-06-13  
-**Next step:** Step 21 — History screen  
+**Next step:** Step 24 — Vercel deploy + Supabase integration  
 
 ---
 
@@ -30,7 +30,7 @@ Update it after each phase completes so future sessions have full context.
 | Framework | Next.js 16, App Router, TypeScript |
 | Styling | Tailwind CSS + Lucide React |
 | AI | Claude API via Anthropic SDK (server-side only) |
-| Storage | Upstash Redis (@upstash/redis) |
+| Storage | Supabase (@supabase/supabase-js) |
 | Auth | None for now |
 | Hosting | Vercel |
 
@@ -52,8 +52,8 @@ Update it after each phase completes so future sessions have full context.
 `.env.local` requires:
 ```
 ANTHROPIC_API_KEY=
-UPSTASH_REDIS_REST_URL=
-UPSTASH_REDIS_REST_TOKEN=
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
 ```
 
 ---
