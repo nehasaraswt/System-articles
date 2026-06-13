@@ -2,7 +2,7 @@
 
 **Project:** Content Engine  
 **Started:** 2026-06-13  
-**Last Updated:** 2026-06-13 (Phase 3 complete)
+**Last Updated:** 2026-06-13 (Phase 4 complete)
 
 ---
 
@@ -13,7 +13,7 @@
 | 1 — Project Setup | 1–5 | Complete | 2026-06-13 |
 | 2 — Types + Core Lib | 6–9 | Complete | 2026-06-13 |
 | 3 — Prompts + API Routes | 10–14 | Complete | 2026-06-13 |
-| 4 — UI + Settings | 15–20 | Not Started | — |
+| 4 — UI + Settings | 15–20 | Complete | 2026-06-13 |
 | 5 — History + Dashboard + Deploy | 21–24 | Not Started | — |
 
 ---
@@ -66,15 +66,15 @@
 
 | Step | Description | Status | Notes |
 |---|---|---|---|
-| 15 | Root layout + navigation | Not Started | |
-| 16 | Upload screen | Not Started | |
-| 17 | Configure screen | Not Started | |
-| 18 | Output screen | Not Started | |
-| 19 | Settings screen (API key + defaults) | Not Started | |
-| 20 | Wire all screens together | Not Started | |
+| 15 | Root layout + navigation | Complete | Dark sidebar, CSS variables, Sidebar.tsx |
+| 16 | Upload screen | Complete | Drag-drop + paste, module metadata, venture/platform pickers |
+| 17 | Configure screen | Complete | Length/audience/diagram/icon pickers, loading spinner |
+| 18 | Output screen | Complete | Tabbed articles, copy button, diagram PNG/SVG download |
+| 19 | Settings screen | Complete | Masked API key field, reveal toggle, generation defaults |
+| 20 | Wire all screens together | Complete | sessionStorage handoff, dashboard how-it-works guide |
 
-**Phase 4 completed:** —  
-**Notes:** —
+**Phase 4 completed:** 2026-06-13  
+**Notes:** All 6 screens pass tsc --noEmit. serverExternalPackages added for pdf-parse/mammoth.
 
 ---
 

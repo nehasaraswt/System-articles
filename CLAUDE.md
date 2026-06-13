@@ -17,9 +17,9 @@ Update it after each phase completes so future sessions have full context.
 
 ## Current Status
 
-**Build phase:** Phase 4 starting  
-**Last phase completed:** Phase 3 — 2026-06-13  
-**Next step:** Step 15 — Root layout + navigation  
+**Build phase:** Phase 5 starting  
+**Last phase completed:** Phase 4 — 2026-06-13  
+**Next step:** Step 21 — History screen  
 
 ---
 
@@ -74,5 +74,5 @@ UPSTASH_REDIS_REST_TOKEN=
 | 1 — Project Setup (steps 1–5) | 2026-06-13 | Step 5 (Upstash) pending Vercel deploy |
 | 2 — Types + Core Lib (steps 6–9) | 2026-06-13 | types/index.ts, lib/kv.ts, lib/claude.ts, lib/icons/lucide-set.ts |
 | 3 — Prompts + API Routes (steps 10–14) | 2026-06-13 | prompts, parsers, 5 API routes |
-| 4 — UI + Settings (steps 15–20) | — | |
+| 4 — UI + Settings (steps 15–20) | 2026-06-13 | 6 screens: layout, upload, configure, output, settings, dashboard |
 | 5 — History + Dashboard + Deploy (steps 21–24) | — | |
