@@ -36,7 +36,8 @@ const STYLE_INSTRUCTION: Record<DiagramStyle, string> = {
 export function diagramPrompt(
   rawContent: string,
   diagramStyle: DiagramStyle,
-  iconStyle: IconStyle
+  iconStyle: IconStyle,
+  diagramPreferences?: string
 ): { systemPrompt: string; userPrompt: string } {
   const iconInstruction =
     iconStyle === 'lucide'
@@ -49,6 +50,10 @@ Available icon names and their path "d" values are listed at the end of this pro
     iconStyle === 'lucide'
       ? `\n\nAvailable icon names: ${ICON_NAMES.join(', ')}.`
       : ''
+
+  const preferencesBlock = diagramPreferences?.trim()
+    ? `\nDesigner's preferences (follow these closely):\n${diagramPreferences.trim()}\n`
+    : ''
 
   return {
     systemPrompt: `You are a professional information designer generating SVG diagrams for LinkedIn posts.
@@ -65,7 +70,7 @@ Rules:
 - Keep labels concise (2-5 words per node)
 - The diagram must be clean, minimal, and publication-ready
 - No lorem ipsum; extract real labels from the source content
-
+${preferencesBlock}
 ${STYLE_INSTRUCTION[diagramStyle]}
 
 ${iconInstruction}${iconList}`,

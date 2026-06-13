@@ -59,6 +59,8 @@ export interface AppSettings {
   defaultVenture: Venture
   defaultLength: Length
   defaultAudience: Audience
+  writingVoice?: string
+  diagramPreferences?: string
 }
 
 export interface GenerateRequest {

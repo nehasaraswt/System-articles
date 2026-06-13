@@ -11,6 +11,8 @@ export async function GET() {
         defaultVenture: 'systems',
         defaultLength: 'medium',
         defaultAudience: 'practitioners',
+        writingVoice: '',
+        diagramPreferences: '',
       }
       return NextResponse.json(defaults)
     }
@@ -45,6 +47,8 @@ export async function POST(req: NextRequest) {
       defaultVenture: body.defaultVenture ?? current?.defaultVenture ?? 'systems',
       defaultLength: body.defaultLength ?? current?.defaultLength ?? 'medium',
       defaultAudience: body.defaultAudience ?? current?.defaultAudience ?? 'practitioners',
+      writingVoice: body.writingVoice ?? current?.writingVoice ?? '',
+      diagramPreferences: body.diagramPreferences ?? current?.diagramPreferences ?? '',
     }
 
     await saveSettings(updated)

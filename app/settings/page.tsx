@@ -94,6 +94,8 @@ export default function SettingsPage() {
     defaultVenture: 'systems',
     defaultLength: 'medium',
     defaultAudience: 'practitioners',
+    writingVoice: '',
+    diagramPreferences: '',
   })
   const [apiKeyInput, setApiKeyInput] = useState('')
   const [apiKeyDirty, setApiKeyDirty] = useState(false)
@@ -271,6 +273,36 @@ export default function SettingsPage() {
                 monospace
               />
             )}
+          </div>
+
+          <div className="rounded-xl p-5 space-y-4" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+            <h2 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Writing Voice</h2>
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+              Describe your voice, style, and tone in plain English. This is injected into every article generation as a standing instruction — the more specific, the better.
+            </p>
+            <textarea
+              value={appSettings.writingVoice ?? ''}
+              onChange={e => setAppSettings(s => ({ ...s, writingVoice: e.target.value }))}
+              rows={5}
+              placeholder={`e.g. I write in first person with a systems thinking lens. My tone is warm but intellectually rigorous — like a conversation between equals. I use short paragraphs (2-3 sentences max), occasional questions to the reader, and concrete metaphors drawn from nature or architecture. I avoid corporate jargon and never use bullet points in narrative writing. I'm the narrator and designer of a 21-day course on Systems Foresight.`}
+              className="w-full rounded-lg px-3 py-2 text-sm outline-none resize-none leading-relaxed"
+              style={{ background: 'var(--bg-base)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+            />
+          </div>
+
+          <div className="rounded-xl p-5 space-y-4" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+            <h2 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Diagram Preferences</h2>
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+              Tell the diagram generator how you want visuals to look and feel. Injected into every diagram generation.
+            </p>
+            <textarea
+              value={appSettings.diagramPreferences ?? ''}
+              onChange={e => setAppSettings(s => ({ ...s, diagramPreferences: e.target.value }))}
+              rows={4}
+              placeholder={`e.g. Keep diagrams sparse and meditative — never crowded. Use earth tones (ochre, terracotta, slate) as accent colours instead of the defaults. Labels should be poetic and evocative, not technical. Show emergence and flow rather than hierarchy. Arrows should feel like energy, not commands.`}
+              className="w-full rounded-lg px-3 py-2 text-sm outline-none resize-none leading-relaxed"
+              style={{ background: 'var(--bg-base)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+            />
           </div>
 
           <div className="rounded-xl p-5 space-y-4" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>

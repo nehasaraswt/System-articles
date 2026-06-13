@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
 import { callClaudeParallel } from '@/lib/claude'
-import { saveGeneration } from '@/lib/kv'
+import { saveGeneration, getSettings } from '@/lib/kv'
 import { thoughtLeadershipPrompt, howToPrompt, storyPrompt } from '@/lib/prompts/articles'
 import { diagramPrompt } from '@/lib/prompts/diagram'
 import type { Generation, GenerateRequest } from '@/types'
@@ -15,10 +15,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'rawContent is required' }, { status: 400 })
     }
 
-    const tlPrompt = thoughtLeadershipPrompt(rawContent, settings)
-    const htPrompt = howToPrompt(rawContent, settings)
-    const stPrompt = storyPrompt(rawContent, settings)
-    const dgPrompt = diagramPrompt(rawContent, settings.diagramStyle, settings.iconStyle)
+    const appSettings = await getSettings().catch(() => null)
+    const writingVoice = appSettings?.writingVoice
+    const diagramPrefs = appSettings?.diagramPreferences
+
+    const tlPrompt = thoughtLeadershipPrompt(rawContent, settings, writingVoice)
+    const htPrompt = howToPrompt(rawContent, settings, writingVoice)
+    const stPrompt = storyPrompt(rawContent, settings, writingVoice)
+    const dgPrompt = diagramPrompt(rawContent, settings.diagramStyle, settings.iconStyle, diagramPrefs)
 
     const [thoughtLeadership, howTo, story, svg] = await callClaudeParallel([
       { ...tlPrompt, maxTokens: 2048 },

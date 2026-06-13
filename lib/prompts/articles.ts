@@ -12,21 +12,25 @@ const AUDIENCE_GUIDE: Record<string, string> = {
   general: 'curious, intelligent readers who are new to the topic and want accessible, engaging insights',
 }
 
-function baseSystem(settings: GenerationSettings, extra: string): string {
+function baseSystem(settings: GenerationSettings, extra: string, writingVoice?: string): string {
   const tone = settings.toneOverride
     ? `Tone: ${settings.toneOverride}.`
+    : ''
+  const voiceBlock = writingVoice?.trim()
+    ? `\nAuthor's voice and style (follow this closely):\n${writingVoice.trim()}\n`
     : ''
   return `You are a world-class writer producing content for publication on LinkedIn and other professional platforms.
 Target audience: ${AUDIENCE_GUIDE[settings.audience]}.
 Target length: ${LENGTH_GUIDE[settings.length]}.
-${tone}
+${tone}${voiceBlock}
 ${extra}
 Return only the article text. No preamble, no title tag, no markdown fences.`
 }
 
 export function thoughtLeadershipPrompt(
   rawContent: string,
-  settings: GenerationSettings
+  settings: GenerationSettings,
+  writingVoice?: string
 ): { systemPrompt: string; userPrompt: string } {
   return {
     systemPrompt: baseSystem(
@@ -37,7 +41,8 @@ export function thoughtLeadershipPrompt(
 - Use the source material as evidence, not as a summary
 - Have a strong POV; avoid hedging
 - End with a provocative question or call to rethink
-- Paragraph breaks every 2-3 sentences for LinkedIn readability`
+- Paragraph breaks every 2-3 sentences for LinkedIn readability`,
+      writingVoice
     ),
     userPrompt: `Write a thought leadership article based on the following course content:\n\n${rawContent}`,
   }
@@ -45,7 +50,8 @@ export function thoughtLeadershipPrompt(
 
 export function howToPrompt(
   rawContent: string,
-  settings: GenerationSettings
+  settings: GenerationSettings,
+  writingVoice?: string
 ): { systemPrompt: string; userPrompt: string } {
   return {
     systemPrompt: baseSystem(
@@ -56,7 +62,8 @@ export function howToPrompt(
 - Each step is concrete and immediately actionable
 - Use specific examples or scenarios
 - End with a single most-important takeaway
-- Keep sentences crisp; bullet points where clarity demands it`
+- Keep sentences crisp; bullet points where clarity demands it`,
+      writingVoice
     ),
     userPrompt: `Write a practical how-to article based on the following course content:\n\n${rawContent}`,
   }
@@ -64,7 +71,8 @@ export function howToPrompt(
 
 export function storyPrompt(
   rawContent: string,
-  settings: GenerationSettings
+  settings: GenerationSettings,
+  writingVoice?: string
 ): { systemPrompt: string; userPrompt: string } {
   return {
     systemPrompt: baseSystem(
@@ -75,7 +83,8 @@ export function storyPrompt(
 - Build an emotional arc: tension → insight → transformation
 - Weave in the concepts from the source material as lived discoveries, not theory
 - Be vulnerable and specific; avoid clichés
-- End with a personal reflection that invites the reader into their own version of this journey`
+- End with a personal reflection that invites the reader into their own version of this journey`,
+      writingVoice
     ),
     userPrompt: `Write a personal story article based on the following course content:\n\n${rawContent}`,
   }
