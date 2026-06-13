@@ -1,59 +1,89 @@
-import { Redis } from '@upstash/redis'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import type { Generation, GenerationMeta, AppSettings } from '@/types'
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-})
+function getClient(): SupabaseClient {
+  const url = process.env.SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) {
+    throw new Error(
+      'Supabase not configured. Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to .env.local'
+    )
+  }
+  return createClient(url, key, { auth: { persistSession: false } })
+}
 
-function metaFromGeneration(gen: Generation): GenerationMeta {
+function toRow(gen: Generation) {
   return {
     id: gen.id,
-    createdAt: gen.createdAt,
+    created_at: gen.createdAt,
     module: gen.module,
     settings: gen.settings,
-    wordCounts: {
-      thoughtLeadership: gen.articles.thoughtLeadership.split(/\s+/).length,
-      howTo: gen.articles.howTo.split(/\s+/).length,
-      story: gen.articles.story.split(/\s+/).length,
-    },
+    raw_content: gen.rawContent,
+    articles: gen.articles,
+    diagram: gen.diagram,
+  }
+}
+
+function fromRow(row: Record<string, unknown>): Generation {
+  return {
+    id: row.id as string,
+    createdAt: row.created_at as string,
+    module: row.module as Generation['module'],
+    settings: row.settings as Generation['settings'],
+    rawContent: row.raw_content as string,
+    articles: row.articles as Generation['articles'],
+    diagram: row.diagram as Generation['diagram'],
   }
 }
 
 export async function saveGeneration(gen: Generation): Promise<void> {
-  const score = new Date(gen.createdAt).getTime()
-  await Promise.all([
-    redis.set(`gen:${gen.id}`, gen),
-    redis.set(`gen:meta:${gen.id}`, metaFromGeneration(gen)),
-    redis.zadd('gen:index', { score, member: gen.id }),
-  ])
+  const { error } = await getClient().from('generations').upsert(toRow(gen))
+  if (error) throw new Error(error.message)
 }
 
 export async function getGeneration(id: string): Promise<Generation | null> {
-  return redis.get<Generation>(`gen:${id}`)
+  const { data, error } = await getClient()
+    .from('generations')
+    .select('*')
+    .eq('id', id)
+    .single()
+  if (error || !data) return null
+  return fromRow(data)
 }
 
 export async function listGenerations(): Promise<GenerationMeta[]> {
-  const ids = await redis.zrange('gen:index', 0, -1, { rev: true })
-  if (!ids.length) return []
-  const metas = await Promise.all(
-    ids.map((id) => redis.get<GenerationMeta>(`gen:meta:${id}`))
-  )
-  return metas.filter((m): m is GenerationMeta => m !== null)
+  const { data, error } = await getClient()
+    .from('generations')
+    .select('id, created_at, module, settings, articles')
+    .order('created_at', { ascending: false })
+  if (error || !data) return []
+  return data.map(row => ({
+    id: row.id as string,
+    createdAt: row.created_at as string,
+    module: row.module as Generation['module'],
+    settings: row.settings as Generation['settings'],
+    wordCounts: {
+      thoughtLeadership: ((row.articles as Generation['articles'])?.thoughtLeadership ?? '').split(/\s+/).filter(Boolean).length,
+      howTo: ((row.articles as Generation['articles'])?.howTo ?? '').split(/\s+/).filter(Boolean).length,
+      story: ((row.articles as Generation['articles'])?.story ?? '').split(/\s+/).filter(Boolean).length,
+    },
+  }))
 }
 
 export async function deleteGeneration(id: string): Promise<void> {
-  await Promise.all([
-    redis.del(`gen:${id}`),
-    redis.del(`gen:meta:${id}`),
-    redis.zrem('gen:index', id),
-  ])
+  const { error } = await getClient().from('generations').delete().eq('id', id)
+  if (error) throw new Error(error.message)
 }
 
 export async function getSettings(): Promise<AppSettings | null> {
-  return redis.get<AppSettings>('app:settings')
+  const { data } = await getClient().from('app_settings').select('data').single()
+  if (!data?.data) return null
+  return data.data as AppSettings
 }
 
 export async function saveSettings(settings: AppSettings): Promise<void> {
-  await redis.set('app:settings', settings)
+  const { error } = await getClient()
+    .from('app_settings')
+    .upsert({ id: true, data: settings })
+  if (error) throw new Error(error.message)
 }
