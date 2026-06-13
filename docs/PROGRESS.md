@@ -2,7 +2,7 @@
 
 **Project:** Content Engine  
 **Started:** 2026-06-13  
-**Last Updated:** 2026-06-13 (Phase 1 complete)
+**Last Updated:** 2026-06-13 (Phase 2 complete)
 
 ---
 
@@ -11,7 +11,7 @@
 | Phase | Steps | Status | Completed |
 |---|---|---|---|
 | 1 — Project Setup | 1–5 | Complete | 2026-06-13 |
-| 2 — Types + Core Lib | 6–9 | Not Started | — |
+| 2 — Types + Core Lib | 6–9 | Complete | 2026-06-13 |
 | 3 — Prompts + API Routes | 10–14 | Not Started | — |
 | 4 — UI + Settings | 15–20 | Not Started | — |
 | 5 — History + Dashboard + Deploy | 21–24 | Not Started | — |
@@ -37,13 +37,13 @@
 
 | Step | Description | Status | Notes |
 |---|---|---|---|
-| 6 | Define TypeScript types | Not Started | |
-| 7 | Write Vercel KV wrapper | Not Started | |
-| 8 | Write Claude API wrapper | Not Started | |
-| 9 | Bundle Lucide icon set | Not Started | |
+| 6 | Define TypeScript types | Complete | types/index.ts — Generation, GenerationMeta, AppSettings, etc. |
+| 7 | Write KV wrapper | Complete | lib/kv.ts — Upstash Redis, save/get/list/delete + settings |
+| 8 | Write Claude API wrapper | Complete | lib/claude.ts — callClaude + callClaudeParallel, KV key → env fallback |
+| 9 | Bundle Lucide icon set | Complete | lib/icons/lucide-set.ts — 30 icons + renderIcon helper |
 
-**Phase 2 completed:** —  
-**Notes:** —
+**Phase 2 completed:** 2026-06-13  
+**Notes:** All files pass tsc --noEmit with zero errors.
 
 ---
 

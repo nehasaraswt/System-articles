@@ -17,9 +17,9 @@ Update it after each phase completes so future sessions have full context.
 
 ## Current Status
 
-**Build phase:** Phase 2 starting  
-**Last phase completed:** Phase 1 — 2026-06-13  
-**Next step:** Step 6 — Define TypeScript types  
+**Build phase:** Phase 3 starting  
+**Last phase completed:** Phase 2 — 2026-06-13  
+**Next step:** Step 10 — Write article prompts  
 
 ---
 
@@ -72,7 +72,7 @@ UPSTASH_REDIS_REST_TOKEN=
 | Phase | Completed | Notes |
 |---|---|---|
 | 1 — Project Setup (steps 1–5) | 2026-06-13 | Step 5 (Upstash) pending Vercel deploy |
-| 2 — Types + Core Lib (steps 6–9) | — | |
+| 2 — Types + Core Lib (steps 6–9) | 2026-06-13 | types/index.ts, lib/kv.ts, lib/claude.ts, lib/icons/lucide-set.ts |
 | 3 — Prompts + API Routes (steps 10–14) | — | |
 | 4 — UI + Settings (steps 15–20) | — | |
 | 5 — History + Dashboard + Deploy (steps 21–24) | — | |
