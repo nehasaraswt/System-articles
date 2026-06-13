@@ -2,7 +2,7 @@
 
 **Project:** Content Engine  
 **Started:** 2026-06-13  
-**Last Updated:** 2026-06-13  
+**Last Updated:** 2026-06-13 (Phase 1 complete)
 
 ---
 
@@ -10,7 +10,7 @@
 
 | Phase | Steps | Status | Completed |
 |---|---|---|---|
-| 1 — Project Setup | 1–5 | Not Started | — |
+| 1 — Project Setup | 1–5 | Complete | 2026-06-13 |
 | 2 — Types + Core Lib | 6–9 | Not Started | — |
 | 3 — Prompts + API Routes | 10–14 | Not Started | — |
 | 4 — UI + Settings | 15–20 | Not Started | — |
@@ -22,14 +22,14 @@
 
 | Step | Description | Status | Notes |
 |---|---|---|---|
-| 1 | Scaffold Next.js app | Not Started | |
-| 2 | Install all dependencies | Not Started | |
-| 3 | Configure environment variables | Not Started | |
-| 4 | Push to GitHub + deploy to Vercel | Not Started | |
-| 5 | Create Vercel KV + link to project | Not Started | |
+| 1 | Scaffold Next.js app | Complete | Next.js 16, App Router, TypeScript, Tailwind |
+| 2 | Install all dependencies | Complete | Switched @vercel/kv → @upstash/redis (KV deprecated) |
+| 3 | Configure environment variables | Complete | .env.local created with placeholders |
+| 4 | Push to GitHub | Complete | github.com/nehasaraswt/System-articles |
+| 5 | Create Upstash Redis + link to project | Not Started | Needs Vercel deploy first |
 
-**Phase 1 completed:** —  
-**Notes:** —
+**Phase 1 completed:** 2026-06-13 (step 5 pending Vercel deploy)  
+**Notes:** @vercel/kv deprecated; using @upstash/redis. Node installed via nvm v24.16.0. gh CLI installed at ~/.local/bin/gh.
 
 ---
 
@@ -96,7 +96,7 @@
 
 | Date | Decision | Outcome |
 |---|---|---|
-| 2026-06-13 | Storage choice | Vercel KV from the start |
+| 2026-06-13 | Storage choice | Upstash Redis — Vercel KV deprecated, switched to @upstash/redis |
 | 2026-06-13 | Auth | None for now — keep URL private |
 | 2026-06-13 | Schema | rawContent + output stored separately |
 | 2026-06-13 | Article generation | 4 parallel Claude calls per run |
