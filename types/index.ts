@@ -71,3 +71,9 @@ export interface ParseResult {
   rawContent: string
   wordCount: number
 }
+
+export interface InfraSettings {
+  supabaseUrl: string             // masked in GET responses
+  supabaseServiceRoleKey: string  // masked in GET responses
+  isConfigured: boolean
+}

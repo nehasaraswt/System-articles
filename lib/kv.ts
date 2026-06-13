@@ -1,14 +1,31 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import type { Generation, GenerationMeta, AppSettings } from '@/types'
 
-function getClient(): SupabaseClient {
+async function getCredentials(): Promise<{ url: string; key: string }> {
+  // Read from HttpOnly cookies first (set via Settings → Supabase section)
+  try {
+    const { cookies } = await import('next/headers')
+    const store = await cookies()
+    const url = store.get('ce_supabase_url')?.value
+    const key = store.get('ce_supabase_key')?.value
+    if (url && key) return { url, key }
+  } catch {
+    // cookies() unavailable outside request context (e.g. build time)
+  }
+
+  // Fall back to environment variables
   const url = process.env.SUPABASE_URL
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!url || !key) {
     throw new Error(
-      'Supabase not configured. Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to .env.local'
+      'Supabase not configured. Go to Settings → Supabase and enter your project URL and service role key.'
     )
   }
+  return { url, key }
+}
+
+async function getClient(): Promise<SupabaseClient> {
+  const { url, key } = await getCredentials()
   return createClient(url, key, { auth: { persistSession: false } })
 }
 
@@ -37,22 +54,21 @@ function fromRow(row: Record<string, unknown>): Generation {
 }
 
 export async function saveGeneration(gen: Generation): Promise<void> {
-  const { error } = await getClient().from('generations').upsert(toRow(gen))
+  const db = await getClient()
+  const { error } = await db.from('generations').upsert(toRow(gen))
   if (error) throw new Error(error.message)
 }
 
 export async function getGeneration(id: string): Promise<Generation | null> {
-  const { data, error } = await getClient()
-    .from('generations')
-    .select('*')
-    .eq('id', id)
-    .single()
+  const db = await getClient()
+  const { data, error } = await db.from('generations').select('*').eq('id', id).single()
   if (error || !data) return null
   return fromRow(data)
 }
 
 export async function listGenerations(): Promise<GenerationMeta[]> {
-  const { data, error } = await getClient()
+  const db = await getClient()
+  const { data, error } = await db
     .from('generations')
     .select('id, created_at, module, settings, articles')
     .order('created_at', { ascending: false })
@@ -71,19 +87,20 @@ export async function listGenerations(): Promise<GenerationMeta[]> {
 }
 
 export async function deleteGeneration(id: string): Promise<void> {
-  const { error } = await getClient().from('generations').delete().eq('id', id)
+  const db = await getClient()
+  const { error } = await db.from('generations').delete().eq('id', id)
   if (error) throw new Error(error.message)
 }
 
 export async function getSettings(): Promise<AppSettings | null> {
-  const { data } = await getClient().from('app_settings').select('data').single()
+  const db = await getClient()
+  const { data } = await db.from('app_settings').select('data').single()
   if (!data?.data) return null
   return data.data as AppSettings
 }
 
 export async function saveSettings(settings: AppSettings): Promise<void> {
-  const { error } = await getClient()
-    .from('app_settings')
-    .upsert({ id: true, data: settings })
+  const db = await getClient()
+  const { error } = await db.from('app_settings').upsert({ id: true, data: settings })
   if (error) throw new Error(error.message)
 }
