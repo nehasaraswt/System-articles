@@ -1,4 +1,4 @@
-import type { GenerationSettings } from '@/types'
+import type { GenerationSettings, VoiceExample } from '@/types'
 
 const LENGTH_GUIDE: Record<string, string> = {
   short: 'approximately 300 words',
@@ -12,18 +12,31 @@ const AUDIENCE_GUIDE: Record<string, string> = {
   general: 'curious, intelligent readers who are new to the topic and want accessible, engaging insights',
 }
 
-function baseSystem(settings: GenerationSettings, extra: string, writingVoice?: string): string {
+function baseSystem(
+  settings: GenerationSettings,
+  extra: string,
+  writingVoice?: string,
+  example?: VoiceExample
+): string {
   const tone = settings.toneOverride
     ? `Tone note: ${settings.toneOverride}.`
     : ''
   const voiceBlock = writingVoice?.trim()
-    ? `AUTHOR'S VOICE (this is the highest-priority instruction — it overrides all other stylistic guidance below):
+    ? `AUTHOR'S VOICE (highest-priority — overrides all other stylistic guidance):
 ${writingVoice.trim()}
+---`
+    : ''
+  const exampleBlock = example?.content?.trim()
+    ? `EXAMPLE OF THE AUTHOR'S REAL WRITING in the ${example.register} register — titled "${example.title}":
+Study the sentence rhythm, vocabulary, structure, and texture of this piece closely. Your output must feel like it came from the same hand.
+
+${example.content.trim()}
 ---`
     : ''
   return `You are ghostwriting for a specific author. Your job is to disappear into their voice — not to produce generic LinkedIn content.
 
 ${voiceBlock}
+${exampleBlock}
 Target audience: ${AUDIENCE_GUIDE[settings.audience]}.
 Target length: ${LENGTH_GUIDE[settings.length]}.
 ${tone}
@@ -35,7 +48,7 @@ Non-negotiable rules:
 - Never use bullet points in narrative sections
 - Never end with a call-to-action
 - Never write in a motivational-speaker or self-help register
-- If the author's voice guide is present above, honour every specific instruction in it
+- If a real writing example is present above, it is your primary calibration signal — match its rhythm and texture
 
 Return only the article text. No preamble, no title tag, no markdown fences.`
 }
@@ -43,7 +56,8 @@ Return only the article text. No preamble, no title tag, no markdown fences.`
 export function thoughtLeadershipPrompt(
   rawContent: string,
   settings: GenerationSettings,
-  writingVoice?: string
+  writingVoice?: string,
+  example?: VoiceExample
 ): { systemPrompt: string; userPrompt: string } {
   return {
     systemPrompt: baseSystem(
@@ -53,7 +67,8 @@ This piece builds around one counter-intuitive intellectual claim drawn from the
 It moves fast. It names things plainly. It ends with a direct challenge or question to the reader — not a conclusion, never a call-to-action.
 The argument is made in the author's own voice, not in generic thought-leadership language.
 Avoid: motivation-speak, jargon, abstract nouns standing in for real things.`,
-      writingVoice
+      writingVoice,
+      example
     ),
     userPrompt: `Write a thought leadership provocation based on the following course content:\n\n${rawContent}`,
   }
@@ -62,7 +77,8 @@ Avoid: motivation-speak, jargon, abstract nouns standing in for real things.`,
 export function howToPrompt(
   rawContent: string,
   settings: GenerationSettings,
-  writingVoice?: string
+  writingVoice?: string,
+  example?: VoiceExample
 ): { systemPrompt: string; userPrompt: string } {
   return {
     systemPrompt: baseSystem(
@@ -71,7 +87,8 @@ export function howToPrompt(
 This is not a listicle or productivity article. The author walks the reader through a way of thinking or doing — slowly, with care.
 It is grounded in the source content, told from lived experience, and lands on a single insight the reader can carry away.
 Structure follows the argument, not a template. No numbered steps unless the content genuinely demands it.`,
-      writingVoice
+      writingVoice,
+      example
     ),
     userPrompt: `Write a practical, framework-style article based on the following course content:\n\n${rawContent}`,
   }
@@ -80,7 +97,8 @@ Structure follows the argument, not a template. No numbered steps unless the con
 export function storyPrompt(
   rawContent: string,
   settings: GenerationSettings,
-  writingVoice?: string
+  writingVoice?: string,
+  example?: VoiceExample
 ): { systemPrompt: string; userPrompt: string } {
   return {
     systemPrompt: baseSystem(
@@ -90,7 +108,8 @@ Open with a specific, private scene or admission — not an observation about th
 Move slowly. Let ideas accumulate. Apply intellectual frameworks (systems thinking, philosophy, language) to make sense of a felt experience.
 End with an open question that hands the reader a mirror. Never resolve neatly. Never conclude.
 The concepts from the course material appear as lived discoveries, not as theory being explained.`,
-      writingVoice
+      writingVoice,
+      example
     ),
     userPrompt: `Write a personal essay based on the following course content:\n\n${rawContent}`,
   }

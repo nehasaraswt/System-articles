@@ -54,6 +54,16 @@ export interface GenerationMeta {
   }
 }
 
+export type VoiceRegister = 'essay' | 'provocation' | 'practical'
+
+export interface VoiceExample {
+  id: string
+  title: string
+  register: VoiceRegister
+  content: string
+  createdAt: string
+}
+
 export interface AppSettings {
   anthropicApiKey: string
   defaultVenture: Venture
@@ -61,6 +71,7 @@ export interface AppSettings {
   defaultAudience: Audience
   writingVoice?: string
   diagramPreferences?: string
+  voiceExamples?: VoiceExample[]
 }
 
 export interface GenerateRequest {

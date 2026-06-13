@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Eye, EyeOff, Check, X, Loader2 } from 'lucide-react'
-import type { AppSettings, InfraSettings, Venture, Length, Audience } from '@/types'
+import { Eye, EyeOff, Check, X, Loader2, Plus, ChevronDown, ChevronUp, BookOpen } from 'lucide-react'
+import type { AppSettings, InfraSettings, Venture, Length, Audience, VoiceExample, VoiceRegister } from '@/types'
 
 const VENTURES: { value: Venture; label: string }[] = [
   { value: 'systems', label: 'Systems Foresight' },
@@ -96,6 +96,7 @@ export default function SettingsPage() {
     defaultAudience: 'practitioners',
     writingVoice: '',
     diagramPreferences: '',
+    voiceExamples: [],
   })
   const [apiKeyInput, setApiKeyInput] = useState('')
   const [apiKeyDirty, setApiKeyDirty] = useState(false)
@@ -103,6 +104,48 @@ export default function SettingsPage() {
   const [appSaved, setAppSaved] = useState(false)
   const [appError, setAppError] = useState('')
   const [appLoading, setAppLoading] = useState(false)
+
+  // ── Voice Library ──
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [newExample, setNewExample] = useState<{ title: string; register: VoiceRegister; content: string }>({
+    title: '', register: 'essay', content: '',
+  })
+  const [librarySaving, setLibrarySaving] = useState(false)
+
+  const saveVoiceExamples = async (examples: VoiceExample[]) => {
+    setLibrarySaving(true)
+    try {
+      await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...appSettings, voiceExamples: examples }),
+      })
+      setAppSettings(s => ({ ...s, voiceExamples: examples }))
+    } finally {
+      setLibrarySaving(false)
+    }
+  }
+
+  const addExample = async () => {
+    if (!newExample.title.trim() || !newExample.content.trim()) return
+    const example: VoiceExample = {
+      id: crypto.randomUUID(),
+      title: newExample.title.trim(),
+      register: newExample.register,
+      content: newExample.content.trim(),
+      createdAt: new Date().toISOString(),
+    }
+    const updated = [...(appSettings.voiceExamples ?? []), example]
+    await saveVoiceExamples(updated)
+    setNewExample({ title: '', register: 'essay', content: '' })
+    setShowAddForm(false)
+  }
+
+  const deleteExample = async (id: string) => {
+    const updated = (appSettings.voiceExamples ?? []).filter(e => e.id !== id)
+    await saveVoiceExamples(updated)
+  }
 
   // Load infra status
   useEffect(() => {
@@ -288,6 +331,155 @@ export default function SettingsPage() {
               className="w-full rounded-lg px-3 py-2 text-sm outline-none resize-none leading-relaxed"
               style={{ background: 'var(--bg-base)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
             />
+          </div>
+
+          {/* ── Voice Library ── */}
+          <div className="rounded-xl p-5 space-y-4" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BookOpen size={14} style={{ color: 'var(--accent)' }} />
+                <h2 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Voice Library</h2>
+                {(appSettings.voiceExamples?.length ?? 0) > 0 && (
+                  <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
+                    {appSettings.voiceExamples!.length} {appSettings.voiceExamples!.length === 1 ? 'example' : 'examples'}
+                  </span>
+                )}
+              </div>
+              {librarySaving && <Loader2 size={13} className="animate-spin" style={{ color: 'var(--text-muted)' }} />}
+            </div>
+
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+              Paste real pieces you&apos;ve written, tagged by register. Claude uses the matching example as its primary calibration signal — it imitates demonstrated style far more precisely than it follows descriptions alone.
+            </p>
+
+            <div className="text-xs rounded-lg p-3 space-y-1" style={{ background: 'var(--bg-base)', border: '1px solid var(--border)' }}>
+              <p style={{ color: 'var(--text-primary)' }} className="font-medium">Register → Article type mapping</p>
+              <p style={{ color: 'var(--text-muted)' }}><span style={{ color: 'var(--accent)' }}>Provocation</span> → Thought Leadership &nbsp;·&nbsp; <span style={{ color: 'var(--accent)' }}>Practical</span> → How-To &nbsp;·&nbsp; <span style={{ color: 'var(--accent)' }}>Essay</span> → Personal Story</p>
+            </div>
+
+            {/* Existing examples */}
+            {(appSettings.voiceExamples ?? []).length > 0 && (
+              <div className="space-y-2">
+                {(appSettings.voiceExamples ?? []).map(ex => (
+                  <div key={ex.id} className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--border)' }}>
+                    <div
+                      className="flex items-center justify-between px-3 py-2.5 cursor-pointer"
+                      style={{ background: 'var(--bg-base)' }}
+                      onClick={() => setExpandedId(expandedId === ex.id ? null : ex.id)}
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-xs px-2 py-0.5 rounded-full shrink-0 font-medium"
+                          style={{
+                            background: ex.register === 'essay' ? '#7c3aed22' : ex.register === 'provocation' ? '#0891b222' : '#15803d22',
+                            color: ex.register === 'essay' ? '#a78bfa' : ex.register === 'provocation' ? '#38bdf8' : '#4ade80',
+                          }}>
+                          {ex.register}
+                        </span>
+                        <span className="text-sm truncate" style={{ color: 'var(--text-primary)' }}>{ex.title}</span>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0 ml-2">
+                        <button
+                          onClick={e => { e.stopPropagation(); deleteExample(ex.id) }}
+                          className="p-1 rounded hover:opacity-70"
+                          style={{ color: 'var(--text-muted)' }}
+                          title="Delete"
+                        >
+                          <X size={13} />
+                        </button>
+                        {expandedId === ex.id ? <ChevronUp size={13} style={{ color: 'var(--text-muted)' }} /> : <ChevronDown size={13} style={{ color: 'var(--text-muted)' }} />}
+                      </div>
+                    </div>
+                    {expandedId === ex.id && (
+                      <div className="px-3 pb-3 pt-2" style={{ background: 'var(--bg-base)', borderTop: '1px solid var(--border)' }}>
+                        <p className="text-xs whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--text-muted)' }}>{ex.content}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Add form */}
+            {showAddForm ? (
+              <div className="space-y-3 rounded-lg p-4" style={{ background: 'var(--bg-base)', border: '1px solid var(--border)' }}>
+                <div className="space-y-1">
+                  <label className="text-xs" style={{ color: 'var(--text-muted)' }}>Title</label>
+                  <input
+                    value={newExample.title}
+                    onChange={e => setNewExample(s => ({ ...s, title: e.target.value }))}
+                    placeholder="e.g. On forgetting how to begin"
+                    className="w-full rounded-lg px-3 py-2 text-sm outline-none"
+                    style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs" style={{ color: 'var(--text-muted)' }}>Register</label>
+                  <div className="flex gap-2">
+                    {(['essay', 'provocation', 'practical'] as VoiceRegister[]).map(r => (
+                      <button
+                        key={r}
+                        onClick={() => setNewExample(s => ({ ...s, register: r }))}
+                        className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                        style={{
+                          background: newExample.register === r ? 'var(--accent-solid)' : 'var(--bg-card)',
+                          color: newExample.register === r ? '#fff' : 'var(--text-muted)',
+                          border: '1px solid var(--border)',
+                        }}
+                      >
+                        {r}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                    Your writing &nbsp;<span style={{ color: 'var(--text-muted)' }}>(300–800 words works best)</span>
+                  </label>
+                  <textarea
+                    value={newExample.content}
+                    onChange={e => setNewExample(s => ({ ...s, content: e.target.value }))}
+                    rows={10}
+                    placeholder="Paste a real piece you've written in this register…"
+                    className="w-full rounded-lg px-3 py-2 text-sm outline-none resize-none leading-relaxed"
+                    style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+                  />
+                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                    {newExample.content.split(/\s+/).filter(Boolean).length} words
+                  </p>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={addExample}
+                    disabled={!newExample.title.trim() || !newExample.content.trim() || librarySaving}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold"
+                    style={{
+                      background: 'var(--accent-solid)', color: '#fff',
+                      opacity: (!newExample.title.trim() || !newExample.content.trim() || librarySaving) ? 0.5 : 1,
+                    }}
+                  >
+                    {librarySaving ? <><Loader2 size={13} className="animate-spin" /> Saving…</> : <><Check size={13} /> Add to library</>}
+                  </button>
+                  <button
+                    onClick={() => { setShowAddForm(false); setNewExample({ title: '', register: 'essay', content: '' }) }}
+                    className="px-4 py-2 rounded-lg text-sm"
+                    style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowAddForm(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm w-full justify-center"
+                style={{ background: 'var(--bg-base)', border: '1px dashed var(--border)', color: 'var(--text-muted)' }}
+              >
+                <Plus size={14} /> Add writing example
+              </button>
+            )}
           </div>
 
           <div className="rounded-xl p-5 space-y-4" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>

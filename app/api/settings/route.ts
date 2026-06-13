@@ -49,6 +49,7 @@ export async function POST(req: NextRequest) {
       defaultAudience: body.defaultAudience ?? current?.defaultAudience ?? 'practitioners',
       writingVoice: body.writingVoice ?? current?.writingVoice ?? '',
       diagramPreferences: body.diagramPreferences ?? current?.diagramPreferences ?? '',
+      voiceExamples: body.voiceExamples !== undefined ? body.voiceExamples : (current?.voiceExamples ?? []),
     }
 
     await saveSettings(updated)

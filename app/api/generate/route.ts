@@ -18,10 +18,14 @@ export async function POST(req: NextRequest) {
     const appSettings = await getSettings().catch(() => null)
     const writingVoice = appSettings?.writingVoice
     const diagramPrefs = appSettings?.diagramPreferences
+    const examples = appSettings?.voiceExamples ?? []
 
-    const tlPrompt = thoughtLeadershipPrompt(rawContent, settings, writingVoice)
-    const htPrompt = howToPrompt(rawContent, settings, writingVoice)
-    const stPrompt = storyPrompt(rawContent, settings, writingVoice)
+    const pickExample = (register: 'provocation' | 'practical' | 'essay') =>
+      examples.find(e => e.register === register)
+
+    const tlPrompt = thoughtLeadershipPrompt(rawContent, settings, writingVoice, pickExample('provocation'))
+    const htPrompt = howToPrompt(rawContent, settings, writingVoice, pickExample('practical'))
+    const stPrompt = storyPrompt(rawContent, settings, writingVoice, pickExample('essay'))
     const dgPrompt = diagramPrompt(rawContent, settings.diagramStyle, settings.iconStyle, diagramPrefs)
 
     const [thoughtLeadership, howTo, story, svg] = await callClaudeParallel([
