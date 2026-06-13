@@ -2,7 +2,7 @@
 
 **Project:** Content Engine  
 **Started:** 2026-06-13  
-**Last Updated:** 2026-06-13 (Phase 2 complete)
+**Last Updated:** 2026-06-13 (Phase 3 complete)
 
 ---
 
@@ -12,7 +12,7 @@
 |---|---|---|---|
 | 1 — Project Setup | 1–5 | Complete | 2026-06-13 |
 | 2 — Types + Core Lib | 6–9 | Complete | 2026-06-13 |
-| 3 — Prompts + API Routes | 10–14 | Not Started | — |
+| 3 — Prompts + API Routes | 10–14 | Complete | 2026-06-13 |
 | 4 — UI + Settings | 15–20 | Not Started | — |
 | 5 — History + Dashboard + Deploy | 21–24 | Not Started | — |
 
@@ -51,14 +51,14 @@
 
 | Step | Description | Status | Notes |
 |---|---|---|---|
-| 10 | Write 3 article prompts | Not Started | |
-| 11 | Write diagram prompt | Not Started | |
-| 12 | Build /api/parse route | Not Started | |
-| 13 | Build /api/generate route | Not Started | |
-| 14 | Build /api/history routes | Not Started | |
+| 10 | Write 3 article prompts | Complete | lib/prompts/articles.ts — TL, how-to, story builders |
+| 11 | Write diagram prompt | Complete | lib/prompts/diagram.ts — 5 styles, optional Lucide icons |
+| 12 | Build /api/parse route | Complete | Handles PDF, DOCX, TXT; returns rawContent + wordCount |
+| 13 | Build /api/generate route | Complete | 4 parallel Claude calls, saves to KV, returns Generation |
+| 14 | Build /api/history + settings routes | Complete | List, GET one, DELETE, GET/POST settings |
 
-**Phase 3 completed:** —  
-**Notes:** —
+**Phase 3 completed:** 2026-06-13  
+**Notes:** pdf-parse v2 ESM import required a cast workaround. All routes pass tsc --noEmit.
 
 ---
 
